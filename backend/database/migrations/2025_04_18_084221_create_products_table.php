@@ -12,15 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
-            Schema::create('products', function (Blueprint $table) {
-                $table->id();
-                $table->string('title');
-                $table->string('sku')->unique();
-                $table->json('images')->nullable();
-                $table->text('description')->nullable();
-                $table->decimal('price', 10, 2);
-                $table->timestamps();
-            });
+            $table->id();
+            $table->string('title');
+            $table->string('sku')->unique();
+            $table->json('images')->nullable();
+            $table->text('description')->nullable();
+            $table->decimal('price', 10, 2);
+            $table->timestamps();
         });
     }
 
