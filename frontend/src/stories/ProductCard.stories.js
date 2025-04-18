@@ -26,7 +26,7 @@ const defaultProduct = {
     sku: 'PHONE-X-001',
     images: ['/src/assets/iphone-green.avif', '/src/assets/iphone-black.avif'],
     description: 'The Apple iPhone 16 5G 128GB represents the absolute pinnacle of the industry in terms of design and features. The powerful A18 chip ensures unparalleled speed and the 6.1-inch Super Retina XDR display reproduces everything with incredible clarity. Thanks to the long battery life, you can use your phone worry-free all day long.',
-    price: 675.99,
+    price: 1099.99,
 };
 
 export const Default = {
