@@ -24,7 +24,7 @@ class Cart extends Model
      */
     public function items()
     {
-        return $this->hasMany(CartItem::class);
+        return $this->hasMany(CartItem::class)->with('product');
     }
 
     /**
@@ -45,7 +45,7 @@ class Cart extends Model
     public function getTotalPriceAttribute()
     {
         return $this->items->sum(function ($item) {
-            return $item->product->price * $item->quantity;
+            return optional($item->product)->price * $item->quantity;
         });
     }
 
@@ -70,6 +70,12 @@ class Cart extends Model
      */
     public function addProduct($productId, $quantity = 1)
     {
+        $quantity = (int) $quantity;
+
+        if ($quantity <= 0) {
+            return null;
+        }
+
         $cartItem = $this->items()->where('product_id', $productId)->first();
 
         if ($cartItem) {

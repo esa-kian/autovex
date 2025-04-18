@@ -198,4 +198,15 @@ class CartTest extends TestCase
         $this->assertEquals(1575.00, $cart->getTotalPriceWithVat(5));  // 5% VAT
         $this->assertEquals(1545.00, $cart->getTotalPriceWithVat(3));  // 3% VAT
     }
+
+    public function test_adding_zero_or_negative_quantity_is_ignored(): void
+    {
+        $products = $this->setupProducts();
+        $cart = Cart::create(['session_id' => 'test-session-8']);
+
+        $cart->addProduct($products[0]->id, 0);
+        $cart->addProduct($products[1]->id, -3);
+
+        $this->assertEquals(0, $cart->items->count());
+    }
 }
