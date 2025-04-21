@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use InvalidArgumentException;
 
 class Cart extends Model
 {
@@ -16,13 +20,12 @@ class Cart extends Model
      */
     protected $fillable = [
         'session_id',
-        'user_id',
     ];
 
     /**
      * Get the items in the cart.
      */
-    public function items()
+    public function items(): HasMany
     {
         return $this->hasMany(CartItem::class)->with('product');
     }
@@ -30,7 +33,7 @@ class Cart extends Model
     /**
      * Get the products in the cart through the cart items.
      */
-    public function products()
+    public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'cart_items')
             ->withPivot('quantity')
@@ -42,7 +45,7 @@ class Cart extends Model
      *
      * @return float
      */
-    public function getTotalPriceAttribute()
+    public function getTotalPriceAttribute(): float
     {
         return $this->items->sum(function ($item) {
             return optional($item->product)->price * $item->quantity;
@@ -55,7 +58,7 @@ class Cart extends Model
      * @param float $vatRate The VAT rate as a percentage (e.g., 21 for 21%)
      * @return float
      */
-    public function getTotalPriceWithVat($vatRate = 21)
+    public function getTotalPriceWithVat($vatRate = 21): float
     {
         $total = $this->total_price;
         return $total * (1 + ($vatRate / 100));
@@ -68,12 +71,14 @@ class Cart extends Model
      * @param int $quantity
      * @return CartItem
      */
-    public function addProduct($productId, $quantity = 1)
+    public function addProduct($productId, $quantity = 1): CartItem
     {
         $quantity = (int) $quantity;
 
+        // validations to check products in db!
+
         if ($quantity <= 0) {
-            return null;
+            throw new InvalidArgumentException("Quantity must be greater than 0.");
         }
 
         $cartItem = $this->items()->where('product_id', $productId)->first();

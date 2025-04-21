@@ -5,10 +5,17 @@ namespace Tests\Feature;
 use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use InvalidArgumentException;
 use Tests\TestCase;
 
 class CartTest extends TestCase
 {
+    /**
+     * improvments:
+     * - Adding invalid product ID
+     * - Adding to non-existent cart
+     * - Testing price after removing item (if supported)
+     */
     use RefreshDatabase;
 
     /**
@@ -199,14 +206,23 @@ class CartTest extends TestCase
         $this->assertEquals(1545.00, $cart->getTotalPriceWithVat(3));  // 3% VAT
     }
 
-    public function test_adding_zero_or_negative_quantity_is_ignored(): void
+    public function test_adding_zero_quantity_throws_exception(): void
     {
+        $this->expectException(InvalidArgumentException::class);
+
         $products = $this->setupProducts();
         $cart = Cart::create(['session_id' => 'test-session-8']);
 
         $cart->addProduct($products[0]->id, 0);
-        $cart->addProduct($products[1]->id, -3);
+    }
 
-        $this->assertEquals(0, $cart->items->count());
+    public function test_adding_negative_quantity_throws_exception(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $products = $this->setupProducts();
+        $cart = Cart::create(['session_id' => 'test-session-8']);
+
+        $cart->addProduct($products[1]->id, -3);
     }
 }
