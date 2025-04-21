@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CartItem extends Model
 {
@@ -23,7 +24,7 @@ class CartItem extends Model
     /**
      * Get the cart that owns the item.
      */
-    public function cart()
+    public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class);
     }
@@ -31,7 +32,7 @@ class CartItem extends Model
     /**
      * Get the product for this cart item.
      */
-    public function product()
+    public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
@@ -41,8 +42,9 @@ class CartItem extends Model
      *
      * @return float
      */
-    public function getSubtotalAttribute()
+    public function getSubtotalAttribute(): float
     {
+        // Handle missing product gracefully by optional($product)
         return $this->product->price * $this->quantity;
     }
 }
